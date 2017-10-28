@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>421</width>
-    <height>435</height>
+    <width>469</width>
+    <height>433</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -196,8 +196,11 @@
         <property name="font">
          <font>
           <family>Calibri</family>
-          <pointsize>16</pointsize>
+          <pointsize>14</pointsize>
          </font>
+        </property>
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>
@@ -212,6 +215,7 @@
         <property name="font">
          <font>
           <family>Calibri</family>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="cornerButtonEnabled">
@@ -220,29 +224,62 @@
         <property name="rowCount">
          <number>5</number>
         </property>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>115</number>
+        </attribute>
         <row>
          <property name="text">
-          <string>Ongezien</string>
+          <string>Nieuw</string>
+         </property>
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>12</pointsize>
+          </font>
          </property>
         </row>
         <row>
          <property name="text">
           <string>Gezien</string>
          </property>
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
         </row>
         <row>
          <property name="text">
           <string>Zilver</string>
+         </property>
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>12</pointsize>
+          </font>
          </property>
         </row>
         <row>
          <property name="text">
           <string>Goud</string>
          </property>
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
         </row>
         <row>
          <property name="text">
           <string>Platina</string>
+         </property>
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>12</pointsize>
+          </font>
          </property>
         </row>
         <column>
@@ -339,19 +376,23 @@
         <property name="font">
          <font>
           <family>Calibri</family>
-          <pointsize>9</pointsize>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="autoScroll">
          <bool>true</bool>
         </property>
+        <attribute name="horizontalHeaderDefaultSectionSize">
+         <number>115</number>
+        </attribute>
         <row>
          <property name="text">
           <string>Goed:</string>
          </property>
          <property name="font">
           <font>
-           <pointsize>10</pointsize>
+           <family>Calibri</family>
+           <pointsize>12</pointsize>
           </font>
          </property>
         </row>
@@ -361,13 +402,20 @@
          </property>
          <property name="font">
           <font>
-           <pointsize>10</pointsize>
+           <family>Calibri Light</family>
+           <pointsize>12</pointsize>
           </font>
          </property>
         </row>
         <column>
          <property name="text">
           <string>Aantal punten</string>
+         </property>
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>12</pointsize>
+          </font>
          </property>
         </column>
         <item row="0" column="0">
@@ -397,7 +445,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>421</width>
+     <width>469</width>
      <height>21</height>
     </rect>
    </property>
