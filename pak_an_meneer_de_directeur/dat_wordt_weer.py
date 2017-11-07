@@ -48,14 +48,15 @@ class Main(QMainWindow, Ui_MainWindow):
         self.full_word_list = None
         self.current_word = None
         self.current_word_list = None
+        self.answer_correct = False
         self.words_in_levels = {}
         for level in self.levels:
             self.words_in_levels[level] = None
-#        self.word_status_tally = pd.Series(index=self.levels)
-        
         self.selected_article = ''
+        self.score = 0
         self.selected_certainty = self.certainty[0]
         self.ui_state = self.ui_states.index('start')
+        self.update_game()
         self.update_ui()
 
     def on_open_word_list(self):
@@ -67,6 +68,7 @@ class Main(QMainWindow, Ui_MainWindow):
             self.file_name = info.fileName()
             self.import_word_list(file_path)
             self.ui_state = self.ui_states.index('ready')
+            self.update_game()
             self.update_ui()
             
     def import_word_list(self, file_path):
@@ -93,11 +95,29 @@ class Main(QMainWindow, Ui_MainWindow):
     def draw(self):
         self.current_word = self.current_word_list.sample()
         self.ui_state = self.ui_states.index('word set')
+        self.update_game()
         self.update_ui()
         
     def play(self):
+        self.answer_correct = False
+        if self.selected_article.lower() == self.current_word.Lidwoord.iloc[0].lower():
+            self.answer_correct = True
         self.ui_state = self.ui_states.index('played')
+        self.update_game()
         self.update_ui()
+        
+    def update_game(self):
+        if self.ui_states[self.ui_state] == 'start':
+            pass
+        if self.ui_states[self.ui_state] == 'ready':
+            pass
+        if self.ui_states[self.ui_state] == 'word set':
+            pass
+        # current word has been set
+        if self.ui_states[self.ui_state] == 'played':
+            pass
+        # answer_correct has been set
+                    
         
     def update_ui(self):
         tally = self.get_word_status_tally()
@@ -132,10 +152,11 @@ class Main(QMainWindow, Ui_MainWindow):
             w_correct = self.tbl_word_score.item(0, 0)
             w_wrong = self.tbl_word_score.item(1, 0)
             w_correct.setCheckState(qt.Qt.Unchecked)
-            w_wrong.setCheckState(qt.Qt.Checked)
-            if self.selected_article.lower() == self.current_word.Lidwoord.iloc[0].lower():
+            w_wrong.setCheckState(qt.Qt.Unchecked)
+            if self.answer_correct:
                 w_correct.setCheckState(qt.Qt.Checked)
-                w_wrong.setCheckState(qt.Qt.Unchecked)
+            else:
+                w_wrong.setCheckState(qt.Qt.Checked)
             
             
     def on_de_changed(self):
