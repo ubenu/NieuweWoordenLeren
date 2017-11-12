@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Dat Wordt Weer Nieuwe Woorden Leren</string>
+   <string>De Spel</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -96,7 +96,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QGroupBox" name="grp_gender">
+         <widget class="QGroupBox" name="grp_article">
           <property name="title">
            <string>Lidwoord</string>
           </property>
@@ -131,32 +131,56 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="grp_confidence">
+         <widget class="QGroupBox" name="grp_stake">
           <property name="title">
-           <string>Vertrouwen</string>
+           <string>Inzet</string>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <widget class="QRadioButton" name="btn_unsure">
+            <widget class="QCheckBox" name="chk_zilver">
+             <property name="font">
+              <font>
+               <family>Calibri</family>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
-              <string>Niet zeker</string>
+              <string>Zilver</string>
              </property>
              <property name="checked">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="btn_sure">
+            <widget class="QCheckBox" name="chk_goud">
+             <property name="font">
+              <font>
+               <family>Calibri</family>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
-              <string>Behoorlijk zeker</string>
+              <string>Goud</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="btn_very_sure">
+            <widget class="QCheckBox" name="chk_platina">
+             <property name="font">
+              <font>
+               <family>Calibri</family>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
              <property name="text">
-              <string>Helemaal zeker</string>
+              <string>Platina</string>
              </property>
             </widget>
            </item>
@@ -454,6 +478,7 @@
      <string>Bestand</string>
     </property>
     <addaction name="action_open_word_list"/>
+    <addaction name="action_open_scoring"/>
     <addaction name="separator"/>
     <addaction name="action_close"/>
    </widget>
@@ -488,6 +513,11 @@
   <action name="action_play">
    <property name="text">
     <string>Speel</string>
+   </property>
+  </action>
+  <action name="action_open_scoring">
+   <property name="text">
+    <string>Open puntentelling</string>
    </property>
   </action>
  </widget>
