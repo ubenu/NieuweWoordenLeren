@@ -25,7 +25,7 @@ Ui_MainWindow, QMainWindow = loadUiType('..\\Resources\\UI\\nwl.ui')
 class Main(QMainWindow, Ui_MainWindow):
     heaps = ['Nieuw', 'Gezien', 'Zilver', 'Goud', 'Platina',]
     stake = ['Zilver', 'Goud', 'Platina']
-    ui_states = ['start', 'word list set', 'scoring set', 'ready', 'word drawn', 'played']
+    ui_states = ['start', 'word list set', 'scoring set', 'ready', 'word drawn', 'selecting', 'played']
     answers = ['fout', 'goed']
     n_minimum_words_in_current_list = 20
                    
@@ -59,6 +59,9 @@ class Main(QMainWindow, Ui_MainWindow):
             self.words_in_heaps[heap] = None
         self.selected_article = ''
         self.selected_stake = ''
+        self.points_if_correct = 0
+        self.points_if_incorrect = 0
+        self.available_stakes = []
         self.score = 0
         self.selected_stake = self.stake[0]
         self.ui_state = self.ui_states.index('start')
@@ -143,10 +146,14 @@ class Main(QMainWindow, Ui_MainWindow):
             self.current_word = self.current_word_entry.Woord.iloc[0]
             self.current_article = self.current_word_entry.Lidwoord.iloc[0]
             self.current_heap = self.current_word_entry.Stapel.iloc[0]
+            scoring_for_heap = self.scoring[self.scoring.Stapel == self.current_heap]
+            self.available_stakes = scoring_for_heap.Inzet.unique()
+            
         if self.ui_states[self.ui_state] == 'played':
             self.answer_correct = False
             if self.selected_article.lower() == self.current_article.lower():
                 self.answer_correct = True
+            self.available_stakes = []
                     
         
     def update_ui(self):
@@ -154,6 +161,13 @@ class Main(QMainWindow, Ui_MainWindow):
         for level in self.heaps:
             i = self.tbl_heaps.item(self.heaps.index(level), 0)
             i.setText('{:d}'.format(int(tally[level])))
+            for chk in self.grp_stake.findChildren(widgets.QCheckBox):
+                chk.setEnabled(False)
+                stake = chk.text()
+                if stake in self.available_stakes:
+                    chk.setEnabled(True)
+            for chk in self.grp_article.findChildren(widgets.QCheckBox):
+                chk.setEnabled(False)
             
         if self.ui_states[self.ui_state] in ('start', 'word list set', 'scoring set'):
             self.btn_draw.setEnabled(False)
@@ -172,11 +186,16 @@ class Main(QMainWindow, Ui_MainWindow):
             self.txt_word.setText(self.current_word)
             for chk in self.grp_article.findChildren(widgets.QCheckBox):
                 chk.setChecked(qt.Qt.Unchecked)
+                chk.setEnabled(True)
             for chk in self.grp_stake.findChildren(widgets.QCheckBox):
                 chk.setChecked(qt.Qt.Unchecked)
             for i in range(self.tbl_word_score.rowCount()):
                 self.tbl_word_score.item(i, 0).setCheckState(qt.Qt.Unchecked)
             self.txt_state.setText("Stapel:  " + self.current_heap)
+            
+        if self.ui_states[self.ui_state] == 'selecting':
+            self.tbl_word_score.item(0, 0).setText('{0}'.format(self.points_if_correct))
+            self.tbl_word_score.item(1, 0).setText('{0}'.format(self.points_if_incorrect))
             
         if self.ui_states[self.ui_state] == 'played':
             self.btn_draw.setEnabled(True)
@@ -195,51 +214,63 @@ class Main(QMainWindow, Ui_MainWindow):
             
     def on_de_changed(self):
         self.selected_article = ''
+        self.ui_state = self.ui_states.index('selecting')
         if self.chk_de.isChecked():
             self.chk_het.setChecked(qt.Qt.Unchecked)
             self.selected_article = 'de'
             
     def on_het_changed(self):
         self.selected_article = ''
+        self.ui_state = self.ui_states.index('selecting')
         if self.chk_het.isChecked():
             self.chk_de.setChecked(qt.Qt.Unchecked)
             self.selected_article = 'het'
             
     def on_zilver_changed(self):
         self.selected_stake = ''
+        self.ui_state = self.ui_states.index('selecting')
+        self.points_if_correct = 0
+        self.points_if_incorrect = 0
         if self.chk_zilver.isChecked():
             self.chk_goud.setChecked(qt.Qt.Unchecked)
             self.chk_platina.setChecked(qt.Qt.Unchecked)
             self.selected_stake = 'Zilver'
-        self.set_prospective_score()
+            self.set_prospective_score()
+#        self.update_game()
+        self.update_ui()
             
     def on_goud_changed(self):
         self.selected_stake = ''
+        self.ui_state = self.ui_states.index('selecting')
+        self.points_if_correct = 0
+        self.points_if_incorrect = 0
         if self.chk_goud.isChecked():
             self.chk_zilver.setChecked(qt.Qt.Unchecked)
             self.chk_platina.setChecked(qt.Qt.Unchecked)
             self.selected_stake = 'Goud'
-        self.set_prospective_score()
+            self.set_prospective_score()
+#        self.update_game()
+        self.update_ui()
             
     def on_platina_changed(self):
         self.selected_stake = ''
+        self.ui_state = self.ui_states.index('selecting')
+        self.points_if_correct = 0
+        self.points_if_incorrect = 0
         if self.chk_platina.isChecked():
             self.chk_zilver.setChecked(qt.Qt.Unchecked)
             self.chk_goud.setChecked(qt.Qt.Unchecked)
             self.selected_stake = 'Platina'
-        self.set_prospective_score()
+            self.set_prospective_score()
+#        self.update_game()
+        self.update_ui()
             
     def set_prospective_score(self): 
-### Below works only partly, probably something to do with some entries being absent, or selected_stake being empty (?)    
-#         if self.ui_states[self.ui_state] == 'word drawn':
-#             heap = self.current_heap
-#             stake = self.selected_stake
-#             x = self.scoring[self.scoring.Stapel == heap]
-#             y = x[x.Inzet == stake]
-#             correct = y[y.Antwoord == 'goed'].Punten.iloc[0]
-#             incorrect = y[y.Antwoord == 'fout'].Punten.iloc[0]
-#             print(correct, incorrect)
-        pass
+        if self.ui_states[self.ui_state] == 'selecting':
+            scoring_for_heap = self.scoring[self.scoring.Stapel == self.current_heap]
+            scoring_for_stake = scoring_for_heap[scoring_for_heap.Inzet == self.selected_stake]
+            self.points_if_correct = scoring_for_stake[scoring_for_stake.Antwoord == 'goed'].Punten.iloc[0]
+            self.points_if_incorrect = scoring_for_stake[scoring_for_stake.Antwoord == 'fout'].Punten.iloc[0]
 
 # Standard main loop code
 if __name__ == '__main__':
