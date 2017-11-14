@@ -110,7 +110,7 @@
               </font>
              </property>
              <property name="text">
-              <string>De</string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -123,7 +123,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Het</string>
+              <string/>
              </property>
             </widget>
            </item>
