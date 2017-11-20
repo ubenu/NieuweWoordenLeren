@@ -78,7 +78,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.file_name_word_list = None
         self.file_name_scoring = None
         self.full_word_list = None
-        self.scoring = None
+        self.scoring_info = None
         self.words_in_heaps = {}
         for heap in self.heaps:
             self.words_in_heaps[heap] = None
@@ -153,7 +153,7 @@ class Main(QMainWindow, Ui_MainWindow):
                 cx.setChecked(True)
             elif cx.isChecked() and cx is not cx1:
                 cx.setChecked(False)
-        if self.current_state == ('stake selected', 'all selected'):
+        if self.current_state in ('stake selected', 'all selected'):
             self.current_state = 'all selected'
         elif self.current_state in ('none selected', 'article selected'):
             self.current_state = 'article selected'
@@ -170,7 +170,7 @@ class Main(QMainWindow, Ui_MainWindow):
                 cx.setChecked(True)
             elif cx.isChecked() and cx is not cx1:
                 cx.setChecked(False)
-        if self.current_state == ('article selected', 'all selected'):
+        if self.current_state in ('article selected', 'all selected'):
             self.current_state = 'all selected'
         elif self.current_state in ('none selected', 'stake selected'):
             self.current_state = 'stake selected'
@@ -218,35 +218,41 @@ class Main(QMainWindow, Ui_MainWindow):
             self.current_word = self.current_word_entry.Woord.iloc[0]
             self.current_article = self.current_word_entry.Lidwoord.iloc[0]
             self.current_heap = self.current_word_entry.Stapel.iloc[0]
-            self.available_stakes = self.scoring[self.scoring.Stapel == self.current_heap].Inzet.unique()
+            self.available_stakes = self.scoring_info[self.scoring_info.Stapel == self.current_heap].Inzet.unique()
             self.selected_article = ''
             self.selected_stake = ''
             
-        if self.current_state == 'article selected':
+        if self.current_state in ('article selected', ):
             for cx in self.grp_article.findChildren(widgets.QCheckBox):
                 if cx.isChecked(): # only one may be checked
-                    self.selected_article = cx.text().lower()
+                    self.selected_article = cx.text()
         
-        if self.current_state == 'stake selected':
+        if self.current_state in ('stake selected', ):
             for cx in self.grp_stake.findChildren(widgets.QCheckBox):
                 if cx.isChecked(): # only one may be checked
-                    self.selected_stake = cx.text().lower()
-            
+                    self.selected_stake = cx.text()
+            self.set_prospective_score()
+                
         if self.current_state == 'all selected':
             # next should already have been set, but just in case...
             for cx in self.grp_article.findChildren(widgets.QCheckBox):
                 if cx.isChecked(): # only one may be checked
-                    self.selected_article = cx.text().lower()
+                    self.selected_article = cx.text()
             for cx in self.grp_stake.findChildren(widgets.QCheckBox):
                 if cx.isChecked(): # only one may be checked
-                    self.selected_stake = cx.text().lower()
+                    self.selected_stake = cx.text()
+            self.set_prospective_score()
 
         if self.current_state == 'played':
             self.answer_correct = False
             if self.selected_article.lower() == self.current_article.lower():
                 self.answer_correct = True
+            if self.answer_correct:
+                self.score += int(self.points_if_correct)
+            else:
+                self.score += int(self.points_if_incorrect)
             self.available_stakes = []
-
+                
         if self.current_state == 'finished':
             pass     
         
@@ -268,13 +274,6 @@ class Main(QMainWindow, Ui_MainWindow):
         for level in self.heaps:
             i = self.tbl_heaps.item(self.heaps.index(level), 0)
             i.setText('{:d}'.format(int(tally[level])))
-            for chk in self.grp_stake.findChildren(widgets.QCheckBox):
-                chk.setEnabled(False)
-                stake = chk.text()
-                if stake in self.available_stakes:
-                    chk.setEnabled(True)
-#             for chk in self.grp_article.findChildren(widgets.QCheckBox):
-#                 chk.setEnabled(False)
             
         if self.current_state in ('start', 'words set', 'scoring set'):
             self.btn_draw.setEnabled(False)
@@ -298,7 +297,6 @@ class Main(QMainWindow, Ui_MainWindow):
             
         if self.current_state == 'none selected':
             self.btn_draw.setEnabled(False)
-            self.btn_play.setEnabled(True)
             self.txt_word.setEnabled(True)
             self.txt_word.setText(self.current_word)
             for chk in self.grp_article.findChildren(widgets.QCheckBox):
@@ -306,16 +304,29 @@ class Main(QMainWindow, Ui_MainWindow):
                 chk.setEnabled(True)
             for chk in self.grp_stake.findChildren(widgets.QCheckBox):
                 chk.setChecked(False)
-                chk.setEnabled(True)
+                chk.setEnabled(False)
+                stake = chk.text()
+                if stake in self.available_stakes:
+                    chk.setEnabled(True)
             for i in range(self.tbl_word_score.rowCount()):
                 self.tbl_word_score.item(i, 0).setCheckState(qt.Qt.Unchecked)
             self.txt_state.setText("Stapel:  " + self.current_heap)
             
+        if self.current_state == 'article selected':
+            pass
+        
         if self.current_state in ('stake selected', 'all selected'):
             self.tbl_word_score.item(0, 0).setText(self.points_if_correct)
             self.tbl_word_score.item(1, 0).setText(self.points_if_incorrect)
             
+        if self.current_state == 'all selected':
+            self.btn_play.setEnabled(True)
+            
         if self.current_state == 'played':
+            for chk in self.grp_article.findChildren(widgets.QCheckBox):
+                chk.setEnabled(False)
+            for chk in self.grp_stake.findChildren(widgets.QCheckBox):
+                chk.setEnabled(False)
             self.btn_draw.setEnabled(True)
             self.btn_play.setEnabled(False)
             self.txt_word.setEnabled(True)
@@ -328,9 +339,11 @@ class Main(QMainWindow, Ui_MainWindow):
                 w_correct.setCheckState(qt.Qt.Checked)
             else:
                 w_wrong.setCheckState(qt.Qt.Checked)
+            self.txt_total.setText('{0}'.format(self.score))
     
     def import_scoring(self, file_path):
-        self.scoring = pd.read_csv(file_path)
+        self.scoring_info = pd.read_csv(file_path)
+        print(self.scoring_info)
 
     def get_word_status_tally(self):
         tally = pd.Series(index=self.heaps)
@@ -341,11 +354,12 @@ class Main(QMainWindow, Ui_MainWindow):
         return tally
     
     def set_prospective_score(self): 
-        if self.current_state == 'selecting':
-            scoring_for_heap = self.scoring[self.scoring.Stapel == self.current_heap]
-            scoring_for_stake = scoring_for_heap[scoring_for_heap.Inzet == self.selected_stake]
-            self.points_if_correct = '{0}'.format(scoring_for_stake[scoring_for_stake.Antwoord == 'goed'].Punten.iloc[0])
-            self.points_if_incorrect = '{0}'.format(scoring_for_stake[scoring_for_stake.Antwoord == 'fout'].Punten.iloc[0])
+        scoring_for_heap = self.scoring_info[self.scoring_info.Stapel == self.current_heap]
+        scoring_for_stake = scoring_for_heap[scoring_for_heap.Inzet == self.selected_stake]
+        self.points_if_correct = '{0}'.format(scoring_for_stake[scoring_for_stake.Antwoord == 'goed'].Punten.iloc[0])
+        self.next_heap_if_correct = scoring_for_stake[scoring_for_stake.Antwoord == 'goed'].Bestemming.iloc[0]
+        self.points_if_incorrect = '{0}'.format(scoring_for_stake[scoring_for_stake.Antwoord == 'fout'].Punten.iloc[0])
+        self.next_heap_if_incorrect = scoring_for_stake[scoring_for_stake.Antwoord == 'fout'].Bestemming.iloc[0]
 
 # Standard main loop code
 if __name__ == '__main__':
@@ -356,42 +370,3 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
     
     
-    
-    #     def on_zilver_changed(self):
-#         self.selected_stake = ''
-#         self.current_state = self.states.index('selecting')
-#         self.points_if_correct = ''
-#         self.points_if_incorrect = ''
-#         if self.chk_zilver.isChecked():
-#             self.chk_goud.setChecked(qt.Qt.Unchecked)
-#             self.chk_platina.setChecked(qt.Qt.Unchecked)
-#             self.selected_stake = 'Zilver'
-#             self.set_prospective_score()
-# #        self.update_game()
-#         self.update_ui()
-#         
-#     def on_goud_changed(self):
-#         self.selected_stake = ''
-#         self.current_state = self.states.index('selecting')
-#         self.points_if_correct = ''
-#         self.points_if_incorrect = ''
-#         if self.chk_goud.isChecked():
-#             self.chk_zilver.setChecked(qt.Qt.Unchecked)
-#             self.chk_platina.setChecked(qt.Qt.Unchecked)
-#             self.selected_stake = 'Goud'
-#             self.set_prospective_score()
-# #        self.update_game()
-#         self.update_ui()
-#             
-#     def on_platina_changed(self):
-#         self.selected_stake = ''
-#         self.current_state = self.states.index('selecting')
-#         self.points_if_correct = ''
-#         self.points_if_incorrect = ''
-#         if self.chk_platina.isChecked():
-#             self.chk_zilver.setChecked(qt.Qt.Unchecked)
-#             self.chk_goud.setChecked(qt.Qt.Unchecked)
-#             self.selected_stake = 'Platina'
-#             self.set_prospective_score()
-# #        self.update_game()
-#         self.update_ui()
