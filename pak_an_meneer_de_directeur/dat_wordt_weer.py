@@ -105,6 +105,8 @@ class Main(QMainWindow, Ui_MainWindow):
         self.current_state = 'ready'
         self.update_game()
         self.update_ui()
+        
+        self.import_all_words()
 
     def on_open_word_list(self):
         file_path = widgets.QFileDialog.getOpenFileName(self, 
@@ -191,6 +193,19 @@ class Main(QMainWindow, Ui_MainWindow):
         n_new = min(len(self.words_in_heaps[self.heaps[0]]), len(self.words_in_heaps[self.heaps[3]]))
         new_words = self.words_in_heaps[self.heaps[0]].sample(n=n_new)
         self.current_word_list = self.current_word_list.append(new_words).sort_index()
+  
+    def import_all_words(self):
+        file_path = widgets.QFileDialog.getOpenFileName(self, 
+        "Open woordenlijst", "", "CSV data files (*.csv);;All files (*.*)")[0]
+        if file_path:
+            self.all_words_info = pd.read_csv(file_path, encoding ='iso8859_6')
+            print(self.all_words_info)
+
+    def import_scoring(self, file_path):
+        self.scoring_info = pd.read_csv(file_path)
+        #print(self.scoring_info)
+
+        
 
     def update_game(self):
         """
@@ -249,10 +264,13 @@ class Main(QMainWindow, Ui_MainWindow):
                 self.answer_correct = True
             if self.answer_correct:
                 self.score += int(self.points_if_correct)
+                self.current_word_entry.Stapel = self.next_heap_if_correct
             else:
                 self.score += int(self.points_if_incorrect)
+                self.current_word_entry.Stapel = self.next_heap_if_incorrect
+            self.current_word_list.loc[self.current_word_entry.index] = self.current_word_entry
             self.available_stakes = []
-                
+           
         if self.current_state == 'finished':
             pass     
         
@@ -341,10 +359,6 @@ class Main(QMainWindow, Ui_MainWindow):
                 w_wrong.setCheckState(qt.Qt.Checked)
             self.txt_total.setText('{0}'.format(self.score))
     
-    def import_scoring(self, file_path):
-        self.scoring_info = pd.read_csv(file_path)
-        print(self.scoring_info)
-
     def get_word_status_tally(self):
         tally = pd.Series(index=self.heaps)
         for heap in self.heaps:
