@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>469</width>
-    <height>433</height>
+    <height>454</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -469,6 +469,27 @@
       </item>
      </layout>
     </item>
+    <item>
+     <widget class="QToolButton" name="btn_stop_and_save">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <family>Calibri</family>
+        <pointsize>16</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Stop en bewaar alles</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -482,10 +503,12 @@
    </property>
    <widget class="QMenu" name="menuBestand">
     <property name="title">
-     <string>Bestand</string>
+     <string>Bestanden</string>
     </property>
     <addaction name="action_open_word_list"/>
     <addaction name="action_open_scoring"/>
+    <addaction name="separator"/>
+    <addaction name="action_add_new_words"/>
     <addaction name="separator"/>
     <addaction name="action_close"/>
    </widget>
@@ -497,6 +520,7 @@
     <addaction name="separator"/>
     <addaction name="action_play"/>
     <addaction name="separator"/>
+    <addaction name="action_stop_and_save"/>
    </widget>
    <addaction name="menuBestand"/>
    <addaction name="menuSpel"/>
@@ -525,6 +549,16 @@
   <action name="action_open_scoring">
    <property name="text">
     <string>Open puntentelling</string>
+   </property>
+  </action>
+  <action name="action_add_new_words">
+   <property name="text">
+    <string>Voeg nieuwe woorden toe</string>
+   </property>
+  </action>
+  <action name="action_stop_and_save">
+   <property name="text">
+    <string>Stop en bewaar alles</string>
    </property>
   </action>
  </widget>

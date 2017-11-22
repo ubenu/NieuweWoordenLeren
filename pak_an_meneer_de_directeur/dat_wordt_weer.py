@@ -46,6 +46,7 @@ class Main(QMainWindow, Ui_MainWindow):
               'all selected', 
               'played',
               'finished',
+              'adding new',
               ]
     answers = ['fout', 
                'goed',
@@ -60,8 +61,11 @@ class Main(QMainWindow, Ui_MainWindow):
         
         self.action_open_word_list.triggered.connect(self.on_open_word_list)
         self.action_open_scoring.triggered.connect(self.on_open_scoring)
-        self.action_draw.triggered.connect(self.on_action_draw)
-        self.action_play.triggered.connect(self.on_action_play)
+        self.action_add_new_words.triggered.connect(self.on_add_new_words)
+        self.action_draw.triggered.connect(self.on_draw)
+        self.action_play.triggered.connect(self.on_play)
+        self.action_stop_and_save.triggered.connect(self.on_stop_and_save)
+        self.btn_stop_and_save.setDefaultAction(self.action_stop_and_save)
         self.btn_draw.setDefaultAction(self.action_draw)
         self.btn_play.setDefaultAction(self.action_play)
         i = 0
@@ -106,7 +110,6 @@ class Main(QMainWindow, Ui_MainWindow):
         self.update_game()
         self.update_ui()
         
-        self.import_all_words()
 
     def on_open_word_list(self):
         file_path = widgets.QFileDialog.getOpenFileName(self, 
@@ -136,13 +139,28 @@ class Main(QMainWindow, Ui_MainWindow):
             self.update_game()
             self.update_ui()
 
-    def on_action_draw(self):
+    def on_add_new_words(self):
+        file_path = widgets.QFileDialog.getOpenFileName(self, 
+        "Open woordenlijst", "", "CSV data files (*.csv);;All files (*.*)")[0]
+        if file_path:
+            self.all_words_info = pd.read_csv(file_path, encoding ='iso8859_6').as_matrix()
+            self.all_words_info = pd.Series(self.all_words_info.reshape((self.all_words_info.shape[0] * self.all_words_info.shape[1],))).dropna()
+            self.all_words_info = self.all_words_info.sort_values()
+            print(self.all_words_info)
+            self.current_state = 'adding new'
+            self.update_game()
+            self.update_ui()
+            
+    def on_stop_and_save(self):
+        pass
+            
+    def on_draw(self):
         self.current_word_entry = self.current_word_list.sample()
         self.current_state = 'none selected'
         self.update_game()
         self.update_ui()
         
-    def on_action_play(self):
+    def on_play(self):
         self.current_state = 'played'
         self.update_game()
         self.update_ui()
@@ -194,12 +212,7 @@ class Main(QMainWindow, Ui_MainWindow):
         new_words = self.words_in_heaps[self.heaps[0]].sample(n=n_new)
         self.current_word_list = self.current_word_list.append(new_words).sort_index()
   
-    def import_all_words(self):
-        file_path = widgets.QFileDialog.getOpenFileName(self, 
-        "Open woordenlijst", "", "CSV data files (*.csv);;All files (*.*)")[0]
-        if file_path:
-            self.all_words_info = pd.read_csv(file_path, encoding ='iso8859_6')
-            print(self.all_words_info)
+
 
     def import_scoring(self, file_path):
         self.scoring_info = pd.read_csv(file_path)
@@ -272,7 +285,10 @@ class Main(QMainWindow, Ui_MainWindow):
             self.available_stakes = []
            
         if self.current_state == 'finished':
-            pass     
+            pass   
+        
+        if self.current_state == 'adding new':
+            print(self.current_state)  
         
     def update_ui(self):
         """
@@ -286,6 +302,7 @@ class Main(QMainWindow, Ui_MainWindow):
                   'all selected', 
                   'played',
                   'finished',
+                  'adding new',
                   ]
         """
         tally = self.get_word_status_tally()
@@ -358,6 +375,15 @@ class Main(QMainWindow, Ui_MainWindow):
             else:
                 w_wrong.setCheckState(qt.Qt.Checked)
             self.txt_total.setText('{0}'.format(self.score))
+            
+        if self.current_state == 'adding_new':
+            for chk in self.grp_article.findChildren(widgets.QCheckBox):
+                chk.setEnabled(False)
+            for chk in self.grp_stake.findChildren(widgets.QCheckBox):
+                chk.setEnabled(False)
+            self.btn_draw.setEnabled(True)
+            self.btn_play.setEnabled(True)
+            self.txt_word.setEnabled(True)            
     
     def get_word_status_tally(self):
         tally = pd.Series(index=self.heaps)
