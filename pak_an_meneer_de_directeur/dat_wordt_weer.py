@@ -46,7 +46,6 @@ class Main(QMainWindow, Ui_MainWindow):
               'all selected', 
               'played',
               'finished',
-              'adding new',
               ]
     answers = ['fout', 
                'goed',
@@ -163,9 +162,10 @@ class Main(QMainWindow, Ui_MainWindow):
         self.update_ui()
         
     def on_play(self):
-        self.current_state = 'played'
-        self.update_game()
-        self.update_ui()
+        if self.current_state != 'adding_new':            
+            self.current_state = 'played'
+            self.update_game()
+            self.update_ui()
         
     def on_article_clicked(self):
         cx1 = self.sender() 
