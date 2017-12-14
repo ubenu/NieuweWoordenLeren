@@ -7,9 +7,9 @@ Created on 22 Oct 2017
 from PyQt5 import QtCore as qt
 from PyQt5 import QtWidgets as widgets
 
-import pandas as pd, numpy as np
+import pandas as pd
 
-import sys
+#import sys
 
 from PyQt5.uic import loadUiType
 Ui_MainWindow, QMainWindow = loadUiType('..\\Resources\\UI\\nwl.ui')
