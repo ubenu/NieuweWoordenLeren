@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>469</width>
-    <height>454</height>
+    <height>457</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -468,27 +468,6 @@
        </widget>
       </item>
      </layout>
-    </item>
-    <item>
-     <widget class="QToolButton" name="btn_stop_and_save">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <family>Calibri</family>
-        <pointsize>16</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Stop en bewaar alles</string>
-      </property>
-     </widget>
     </item>
    </layout>
   </widget>

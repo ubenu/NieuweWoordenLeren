@@ -9,6 +9,7 @@ from PyQt5 import QtWidgets as widgets
 
 import pandas as pd, numpy as np
 
+import sys
 
 from PyQt5.uic import loadUiType
 Ui_MainWindow, QMainWindow = loadUiType('..\\Resources\\UI\\nwl.ui')
@@ -64,7 +65,6 @@ class Main(QMainWindow, Ui_MainWindow):
         self.action_draw.triggered.connect(self.on_draw)
         self.action_play.triggered.connect(self.on_play)
         self.action_stop_and_save.triggered.connect(self.on_stop_and_save)
-        self.btn_stop_and_save.setDefaultAction(self.action_stop_and_save)
         self.btn_draw.setDefaultAction(self.action_draw)
         self.btn_play.setDefaultAction(self.action_play)
         i = 0
