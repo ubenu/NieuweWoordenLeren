@@ -7,6 +7,8 @@ Created on 22 Oct 2017
 from PyQt5 import QtCore as qt
 from PyQt5 import QtWidgets as widgets
 
+from pak_an_meneer_de_directeur.nwl_tablemodel import NwlTableModel
+
 import pandas as pd
 
 #import sys
@@ -63,6 +65,13 @@ class Main(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         
         self.tbl_heaps.verticalHeader().setSectionResizeMode(3)
+
+        self.tbl_heaps1 = widgets.QTableView()
+        #self.tbl_heaps1.setSizeAdjustPolicy(widgets.QAbstractItemView.AdjustToContents)
+        df_heaps = pd.DataFrame(index=self.heaps, columns=['Aantal\nwoorden'])
+        self.mdl_heaps = NwlTableModel(df_heaps)
+        self.tbl_heaps1.setModel(self.mdl_heaps)
+        self.lot_heaps.addWidget(self.tbl_heaps1)
         
         self.action_open_word_list.triggered.connect(self.on_open_word_list)
         self.action_open_scoring.triggered.connect(self.on_open_scoring)
@@ -233,10 +242,7 @@ class Main(QMainWindow, Ui_MainWindow):
         print(self.full_word_list)
   
     def import_scoring(self, file_path):
-        self.full_scoring_info = pd.read_csv(file_path)
-        #print(self.full_scoring_info)
-
-        
+        self.full_scoring_info = pd.read_csv(file_path)        
 
     def update_game(self):
         """
@@ -322,6 +328,8 @@ class Main(QMainWindow, Ui_MainWindow):
         """
         tally = self.get_word_status_tally()
         for level in self.heaps:
+            self.mdl_heaps.df_data[level] = int(tally[level])
+            
             i = self.tbl_heaps.item(self.heaps.index(level), 0)
             i.setText('{:d}'.format(int(tally[level])))
             
